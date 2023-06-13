@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>運動圖鑑</title>
+  <style>
+    body {
+        text-align: center;
+        background-image: url('https://images.pexels.com/photos/884788/pexels-photo-884788.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=1');
+        background-size: cover;
+        color: white; /* 設定文字顏色為黑色 */
+        background-color: rgba(0, 0, 0, 0.5); /* 設定文字背景顏色為半透明白色 */
+        padding: 20px; /* 可選：為文字區域添加一些間距 */   
+    }
+    table {
+      width: fit-content;
+      border: 1px solid #ddd;
+      border-collapse: collapse;
+      margin: 0 auto;
+    }
+    th, td {
+      padding: 8px;
+      text-align: left;
+      border: 1px solid #ddd;
+    }
+  </style>
+  <h2>輸入天氣資訊</h2>
+</head>
+<body>
+  <label for="temperature">溫度：</label>
+  <input type="number" id="temperature" name="temperature">
+  <br><br>
+  <label for="weather">天氣情況：</label>
+  <select id="weather" name="weather">
+    <option value="sunny">晴天</option>
+    <option value="rainy">雨天</option>
+    <option value="cold">寒冷天氣</option>
+    <option value="hot">炎熱天氣</option>
+    <option value="humid">濕潤天氣</option>
+    <option value="snowy">下雪天氣</option>
+    <option value="heat">高溫悶熱天氣</option>
+    <option value="windy">多風天氣</option>
+  </select>
+  <br><br>
+  <button onclick="suggestSport()">顯示適合的運動</button>
+  <br><br>
+  <table>
+    <thead>
+      <tr>
+        <th>天氣情況</th>
+        <th>運動</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td>晴天</td>
+        <td id="sunny"></td>
+      </tr>
+      <tr>
+        <td>雨天</td>
+        <td id="rainy"></td>
+      </tr>
+      <tr>
+        <td>寒冷天氣</td>
+        <td id="cold"></td>
+      </tr>
+      <tr>
+        <td>炎熱天氣</td>
+        <td id="hot"></td>
+      </tr>
+      <tr>
+        <td>濕潤天氣</td>
+        <td id="humid"></td>
+      </tr>
+      <tr>
+        <td>下雪天氣</td>
+        <td id="snowy"></td>
+      </tr>
+      <tr>
+        <td>高溫悶熱天氣</td>
+        <td id="heat"></td>
+      </tr>
+      <tr>
+        <td>多風天氣</td>
+        <td id="windy"></td>
+      </tr>
+    </tbody>
+  </table>
+
+  <br><br>
+  <button onclick="navigateToWebsite('C:/%E4%B8%AD%E5%A4%AE/%E5%95%86%E7%94%A8%E8%A8%88%E7%AE%97%E6%A9%9F%E7%A8%8B%E5%BC%8F/%E6%9F%A5%E8%A9%A2%E5%A4%A9%E6%B0%A3.html')">上一頁</button>
+  <button onclick="navigateToWebsite('https:global.espn.com/')">下一頁</button>
+
+  <script>
+    const sports = {
+      sunny: ["慢跑或快走", "自行車騎行"],
+      rainy: ["室內有氧運動", "游泳"],
+      cold: ["室內健身活動", "健身房訓練"],
+      hot: ["游泳", "室內涼爽運動"],
+      humid: ["室內有氧運動", "瑜伽"],
+      snowy: ["滑雪", "雪地活動"],
+      heat: ["水上運動", "游泳"],
+      windy: ["風箏運動", "風帆運動"]
+    };
+
+
+    function suggestSport() {
+      const temperature = document.getElementById("temperature").value;
+      const weather = document.getElementById("weather").value;
+
+      // 清空表格中的運動
+      for (let key in sports) {
+        const sportCell = document.getElementById(key);
+        sportCell.innerHTML = "";
+      }
+
+      // 顯示新的運動建議
+      const sportCell = document.getElementById(weather);
+      sportCell.innerHTML = sports[weather].join(", ");
+
+      document.body.style.backgroundImage = `url('${backgrounds[weather].image}')`;
+      document.body.style.color = backgrounds[weather].color;
+    }
+
+    function navigateToPreviousPage() {
+      window.history.back();
+    }
+
+    function navigateToWebsite(url) {
+      window.location.href = url;
+    }
+  </script>
+</body>
+</html>

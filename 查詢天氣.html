@@ -1,0 +1,385 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="utf-8"/>
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>weather.html</title>
+
+    <style>
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            background-image: url('https://images.pexels.com/photos/884788/pexels-photo-884788.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=1');
+            background-size: cover;
+        }
+
+        .base {
+            position: relative;
+            display: block;
+            margin: 0 auto;
+            padding: 20px;
+            width: 90%;
+            max-width: 300px;
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 20px 35px rgba(0, 0, 0, 0.2);
+            overflow: hidden;
+        }
+
+        h1 {
+            font: 20px/1.7 "Noto Sans TC";
+            letter-spacing: 2px;
+            text-align: center;
+            color: darkcyan;
+        }
+
+        #choceLocation {
+            display: block;
+            margin-bottom: 30px;
+            width: 100%;
+            font: 300 17px/1.7 "Noto Sans TC";
+            letter-spacing: 2px;
+            text-align: center;
+            background: #eee;
+            border: none;
+            border-radius: 99em;
+        }
+
+        #boardLocaltion {
+            font: 25px/1.7 "Noto Sans TC";
+            letter-spacing: 2px;
+            text-align: center;
+            color: darkgrey;
+        }
+
+        #boardWeatherImg {
+            display: block;
+            margin: 0 auto;
+        }
+
+        #boardWeatherState {
+            font: 30px/1.7 "Noto Sans TC";
+            letter-spacing: 2px;
+            text-align: center;
+            color: black;
+        }
+
+
+
+
+        #boardWeatherDetail {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 10px;
+            padding: 20px;
+            background: #eee;
+            border-radius: 10px;
+            font: 100 15px/1.7 "Noto Sans TC";
+        }
+
+
+
+        #loading {
+            display: none;
+            justify-content: center;
+            align-items: center;
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            font: 100 30px/1.7 "Noto Sans TC";
+            letter-spacing: 4px;
+            background: rgba(255, 255, 255, 0.9);
+        }
+
+        #loading.on {
+            display: flex;
+        }
+
+        #loading ul {
+            position: absolute;
+            top: 55%;
+            left: calc(50% - 25px);
+            width: 50px;
+            height: 50px;
+            list-style: none;
+        }
+
+        #loading ul li {
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.1);
+            border-radius: 99em;
+            animation: rotation 0.8s linear infinite alternate;
+        }
+
+        @keyframes rotation {
+            from {
+                transform: scale(0.1);
+            }
+
+            to {
+                transform: scale(1);
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="base">
+        <div>
+            <h1>您想查詢哪裡呢?</h1><br/>
+
+                <label for="location-select">選擇區域:</label>
+                <select id="location-select">
+                  <option value="1">新竹縣</option>
+                  <option value="2">金門縣</option>
+                  <option value="3">苗栗縣</option>
+                  <option value="4">新北市</option>
+                  <option value="5">宜蘭縣</option>
+                  <option value="6">雲林縣</option>
+                  <option value="7">台南市</option>
+                  <option value="8">高雄市</option>
+                  <option value="9">彰化縣</option>
+                  <option value="10">台北市</option>
+                  <option value="11">南投縣</option>
+                  <option value="12">澎湖縣</option>
+                  <option value="13">基隆市</option>
+                  <option value="14">桃園市</option>
+                  <option value="15">花蓮縣</option>
+                  <option value="16">連江縣</option>
+                  <option value="17">台東縣</option>
+                  <option value="18">嘉義市</option>
+                  <option value="19">嘉義縣</option>
+                  <option value="20">屏東縣</option>
+                  <option value="21">台中市</option>
+                  <option value="22">新竹市</option>
+            </select><br/>
+
+                <label for="time-select">選擇時間:</label>
+                <select id="time-select">
+                  <option value="1">今天</option>
+                  <option value="3">一天後</option>
+                  <option value="5">兩天後</option>
+            </select>
+
+            <button id="fetch-button">查詢天氣狀態</button>
+            <div id="output"></div>
+        </div>
+        <div id="boardLocaltion">
+
+        </div>
+        <div>
+            <img src="" id="boardWeatherImg" alt="">
+        </div>
+        <div id="boardWeatherState">
+        </div>
+        <div id="boardWeatherDetail">
+            <div><i class="fa-solid fa-temperature-three-quarters"></i>溫度:<span id="temperatureText"></span> </div>
+            <div><i class="fa-solid fa-user"></i>體感:<span id="temperatureText_feel"></span></div>
+            <div><i class="fa-solid fa-temperature-arrow-up"></i>最高:<span id="temperatureText_Max"></span></div>
+            <div><i class="fa-solid fa-temperature-arrow-down"></i>最低:<span id="temperatureText_low"></span></div>
+            <div><i class="fa-solid fa-temperature-arrow-down"></i>濕度:<span id="temperatureText_moist"></span></div>
+            <div><i class="fa-solid fa-temperature-arrow-down"></i>風速:<span id="temperatureText_wind"></span></div>
+            <div><i class="fa-solid fa-temperature-arrow-down"></i>紫外線指數:<span id="temperatureText_UVI"></span></div>
+            <div><i class="fa-solid fa-temperature-arrow-down"></i>降雨機率:<span id="temperatureText_rain"></span></div>
+        </div>
+
+
+
+        <div id="loading">
+            <p>請稍等</p>
+            <ul>
+                <li></li>
+            </ul>
+        </div>
+        <div id="container">
+    
+            <br>
+            <button id="next-button">下一頁</button>
+        </div>
+
+
+    
+      <script>
+        const fetchButton = document.getElementById('fetch-button');
+        const output = document.getElementById('output');
+        const locationSelect = document.getElementById('location-select');
+        const timeSelect = document.getElementById('time-select');
+        const temperatureTextElement = document.getElementById('temperatureText');
+        const temperatureTextElement_low = document.getElementById('temperatureText_low');
+        const temperatureTextElement_UVI = document.getElementById('temperatureText_UVI');
+        const temperatureTextElement_Max = document.getElementById('temperatureText_Max');
+        const temperatureTextElement_rain = document.getElementById('temperatureText_rain');
+        const temperatureTextElement_moist = document.getElementById('temperatureText_moist');
+        const temperatureTextElement_wind = document.getElementById('temperatureText_wind');
+        const temperatureTextElement_feel = document.getElementById('temperatureText_feel');
+
+        // 獲取按鈕元素
+        var selectElement = document.getElementById('location-select');
+        var searchButton = document.getElementById('fetch-button');
+
+
+        searchButton.addEventListener('click', function() {
+            var selectedCity = selectElement.value;
+
+            var backgroundImageUrl;
+            if (selectedCity === '14') {
+                backgroundImageUrl = 'https://www.overseas.edu.tw/wp-content/uploads/2020/10/%E4%B8%AD%E5%A4%A7%E5%A4%A7%E9%96%80-scaled.jpg'; // 替換為桃園市的背景圖片URL
+            } else if (selectedCity === '10') {
+                backgroundImageUrl = 'https://th.bing.com/th/id/R.90139666f8943b728df6af35d9e0f82a?rik=V2B9Csf%2be9hAdA&riu=http%3a%2f%2fi.52desktop.cn%3a81%2fupimg%2fallimg%2f20141231%2f2014123116175167177807.jpg&ehk=AryhWxX8LTLpPs4rb31XISqXKyw0zFPNtxRenGZli8M%3d&risl=&pid=ImgRaw&r=0'; // 替換為台北市的背景圖片URL
+            } else if (selectedCity === '8') {
+                backgroundImageUrl = 'https://icrvb3jy.xinmedia.com/solomo/article/184997/DF4C438A-ACF5-2764-1B59-0DDECE9FF1E5.jpeg'; // 替換為高雄市的背景圖片URL
+            } else if (selectedCity === '1') {
+                backgroundImageUrl = 'https://th.bing.com/th/id/R.6815cb733f75dade7090742b6d48c910?rik=S1fS1BG20KqNhQ&riu=http%3a%2f%2f102clps60825.weebly.com%2fuploads%2f2%2f3%2f9%2f0%2f23904602%2f312137_orig.jpg&ehk=DRqMC%2fKWiE1b%2bzPuFx9DFGzq%2bUp0hxEP5Acd8TShpSg%3d&risl=&pid=ImgRaw&r=0'; // 替換為台北市的背景圖片URL
+            } else if (selectedCity === '2') {
+                backgroundImageUrl = 'https://th.bing.com/th/id/R.3ece4b6c6a7660b5f259626aefbc5fa4?rik=D8dhcMHxHwqXZA&pid=ImgRaw&r=0'; // 替換為高雄市的背景圖片URL
+            } else if (selectedCity === '3') {
+                backgroundImageUrl = 'https://pgw.udn.com.tw/gw/photo.php?u=https://uc.udn.com.tw/photo/2019/11/29/99/7127982.png&x=0&y=0&sw=0&sh=0&exp=3600'; // 替換為台北市的背景圖片URL
+            } else if (selectedCity === '4') {
+                backgroundImageUrl = 'https://th.bing.com/th/id/R.7c8bff34ccf818e607ae6b50adce0bcf?rik=Fue4h56c44syAw&pid=ImgRaw&r=0'; // 替換為高雄市的背景圖片URL
+            } else if (selectedCity === '5') {
+                backgroundImageUrl = 'https://blog.asiayo.com/wp-content/uploads/2017/03/%E5%AE%9C%E8%98%AD_%E9%A6%96%E5%9C%96_Wilbur.jpg-1.jpg'; // 替換為台北市的背景圖片URL
+            } else if (selectedCity === '6') {
+                backgroundImageUrl = 'https://th.bing.com/th/id/R.198f51254f8609bda1b7f1341eae4176?rik=4THWvU6d%2fcFBtA&pid=ImgRaw&r=0'; // 替換為高雄市的背景圖片URL
+            } else if (selectedCity === '7') {
+                backgroundImageUrl = 'https://blog.asiayo.com/wp-content/uploads/2017/03/%E5%8F%B0%E5%8D%97_%E5%A5%87%E7%BE%8E%E5%8D%9A%E7%89%A9%E9%A4%A8_shelly.jpg'; // 替換為台北市的背景圖片URL
+            } else if (selectedCity === '9') {
+                backgroundImageUrl = 'https://lh6.googleusercontent.com/proxy/hkoxwCkPeVui9nmxdzsxvcR2w3dW5VllYPfJFj0sBKEHGcqTAntVAMl5xlk3NDrbHY2OTa9IQw4awhrVgS8UkK-GiUvASORFeWTm-3zRSZLwyA=s0-d'; // 替換為高雄市的背景圖片URL
+            } else if (selectedCity === '11') {
+                backgroundImageUrl = 'https://th.bing.com/th/id/R.513fa1641a6e160e6bf77055a6ca0c37?rik=nG6hycb7XrNCEA&pid=ImgRaw&r=0'; // 替換為高雄市的背景圖片URL
+            } else if (selectedCity === '12') {
+                backgroundImageUrl = 'https://sunpenghu.com/wp-content/uploads/2020/06/%E6%BE%8E%E6%B9%96ig%E6%99%AF%E9%BB%9E.jpg'; // 替換為台北市的背景圖片URL
+            } else if (selectedCity === '13') {
+                backgroundImageUrl = 'https://storage.googleapis.com/dev-smiletaiwan-cms-cwg-tw/ckeditor/201901/ckeditor-5c4f17d8ea24b.jpg'; // 替換為高雄市的背景圖片URL
+            } else if (selectedCity === '15') {
+                backgroundImageUrl = 'https://img9.htimgs.com/2014/0122/20140122015848607.jpg'; // 替換為台北市的背景圖片URL
+            } else if (selectedCity === '16') {
+                backgroundImageUrl = 'https://images.chinatimes.com/newsphoto/2020-04-08/1024/B19A00_P_04_02.jpg'; // 替換為高雄市的背景圖片URL
+            } else if (selectedCity === '17') {
+                backgroundImageUrl = 'https://3.bp.blogspot.com/-q7W2IUBf5d4/UgOkbXgvwAI/AAAAAAAADI4/V9Q5dA7VkIQ/s1600/5M3C6213.jpg'; // 替換為台北市的背景圖片URL
+            } else if (selectedCity === '18') {
+                backgroundImageUrl = 'https://img.ltn.com.tw/Upload/news/600/2020/03/10/3095344_2.jpg'; // 替換為高雄市的背景圖片URL
+            } else if (selectedCity === '19') {
+                backgroundImageUrl = 'https://pgw.udn.com.tw/gw/photo.php?u=https://uc.udn.com.tw/photo/2019/04/23/realtime/6212709.jpg&s=Y&x=0&y=0&sw=1279&sh=854&exp=3600'; // 替換為台北市的背景圖片URL
+            } else if (selectedCity === '20') {
+                backgroundImageUrl = 'https://s.newtalk.tw/album/news/532/6017b8eef3aab.jpg'; // 替換為高雄市的背景圖片URL
+            } else if (selectedCity === '21') {
+                backgroundImageUrl = 'https://img.ltn.com.tw/Upload/news/600/2021/10/05/phpq4w0eM.jpg'; // 替換為台北市的背景圖片URL
+            } else if (selectedCity === '22') {
+                backgroundImageUrl = 'https://img.ltn.com.tw/Upload/food/page/2016/09/09/160909-3270-5-DJ5TQ.jpg'; // 替換為高雄市的背景圖片URL
+            }  
+
+            if (backgroundImageUrl) {
+                document.body.style.backgroundImage = "url('" + backgroundImageUrl + "')";
+            }
+        });
+    
+        fetchButton.addEventListener('click', () => {
+          const locationIndex = parseInt(locationSelect.value) - 1;
+          const timeIndex = parseInt(timeSelect.value) - 1;
+          const locationName = locationSelect.value;
+          const apiUrl = 'https://opendata.cwb.gov.tw/api/v1/rest/datastore/F-D0047-091?Authorization=CWB-CABECD45-CBCB-4EA8-995A-0FC0117853F4';      //const apiUrl = `https://opendata.cwb.gov.tw/api/v1/rest/datastore/F-D0047-063?Authorization=CWB-CABECD45-CBCB-4EA8-995A-0FC0117853F4&locationName=${locationSelect}`
+          fetch(apiUrl)    //平均溫度
+                
+            .then(response => response.json())
+            .then(data => {
+            const weatherElements = data.records.locations[0].location[locationIndex].weatherElement;
+            const temperatureElement = weatherElements.find(element => element.elementName === 'T'); 
+            const temperatureData = JSON.stringify(temperatureElement.time[timeIndex].elementValue)//.replace('[{"value":"', '').replace('","measures":"NA"}]', '').replace('。', '  ☁  ').replace('。', ' 💧 ').replace('。', ' 🌡️ ').replace('。', '  ⛱️  ').replace('。', ' 💨 ');
+    
+            const temperatureText = temperatureData.match(/\d+/)[0];
+            temperatureTextElement.textContent = temperatureText;
+
+            console.log(temperatureData)
+
+            
+            
+            const weatherElements_low = data.records.locations[0].location[locationIndex].weatherElement;
+            const temperatureElement_low = weatherElements_low.find(element => element.elementName === 'MinT'); 
+            const temperatureData_low = JSON.stringify(temperatureElement_low.time[timeIndex].elementValue)
+        
+            const temperatureText_low = temperatureData_low.match(/\d+/)[0];
+            temperatureTextElement_low.textContent = temperatureText_low;
+
+            
+            
+            const weatherElements_UVI = data.records.locations[0].location[locationIndex].weatherElement;
+            const temperatureElement_UVI = weatherElements_UVI.find(element => element.elementName === 'UVI'); 
+            const temperatureData_UVI = JSON.stringify(temperatureElement_UVI.time[timeIndex].elementValue)
+            
+            const temperatureText_UVI = temperatureData_UVI.match(/\d+/)[0];
+            temperatureTextElement_UVI.textContent = temperatureText_UVI;
+
+
+
+            const weatherElements_Max = data.records.locations[0].location[locationIndex].weatherElement;
+            const temperatureElement_Max = weatherElements_Max.find(element => element.elementName === 'MaxT'); 
+            const temperatureData_Max = JSON.stringify(temperatureElement_Max.time[timeIndex].elementValue)
+              
+            const temperatureText_Max = temperatureData_Max.match(/\d+/)[0];
+            temperatureTextElement_Max.textContent = temperatureText_Max;
+
+
+
+            const weatherElements_rain = data.records.locations[0].location[locationIndex].weatherElement;
+            const temperatureElement_rain = weatherElements_rain.find(element => element.elementName === 'PoP12h'); 
+            const temperatureData_rain = JSON.stringify(temperatureElement_rain.time[timeIndex].elementValue)
+              
+            const temperatureText_rain = temperatureData_rain.match(/\d+/)[0];
+            const temperatureElement_rain2 = ` ${temperatureText_rain} %`;
+            temperatureTextElement_rain.textContent = temperatureElement_rain2;
+
+            const weatherElements_moist = data.records.locations[0].location[locationIndex].weatherElement;
+            const temperatureElement_moist = weatherElements_moist.find(element => element.elementName === 'RH'); 
+            const temperatureData_moist = JSON.stringify(temperatureElement_moist.time[timeIndex].elementValue)
+           
+            const temperatureText_moist = temperatureData_moist.match(/\d+/)[0];
+            const temperatureElement_moist2 = ` ${temperatureText_moist} %`;
+            temperatureTextElement_moist.textContent = temperatureElement_moist2;
+
+
+            const weatherElements_wind = data.records.locations[0].location[locationIndex].weatherElement;
+            const temperatureElement_wind = weatherElements_wind.find(element => element.elementName === 'WS'); 
+            const temperatureData_wind = JSON.stringify(temperatureElement_wind.time[timeIndex].elementValue)
+           
+            const temperatureText_wind = temperatureData_wind.match(/\d+/)[0];
+            const temperatureElement_wind2 = ` ${temperatureText_wind} m/sc`;
+            temperatureTextElement_wind.textContent = temperatureElement_wind2;
+
+
+            const weatherElements_feel = data.records.locations[0].location[locationIndex].weatherElement;
+            const temperatureElement_feel = weatherElements_feel.find(element => element.elementName === 'MaxAT'); 
+            const temperatureData_feel = JSON.stringify(temperatureElement_feel.time[timeIndex].elementValue)
+           
+            const temperatureText_feel = temperatureData_feel.match(/\d+/)[0];
+                 //const temperatureElement_moist2 = ` ${temperatureText_moist} %`;
+            temperatureTextElement_feel.textContent = temperatureText_feel;
+
+
+
+            })
+            .catch(error => {
+              temperatureTextElement.textContent = 'Error occurred';
+            });
+
+
+
+        });
+
+        document.getElementById('next-button').addEventListener('click', () => {
+            container.style.background = 'linear-gradient(to bottom, rgba(255, 255, 255, 1) 0%, rgba(255, 255, 255, 0) 100%)';
+            window.location.href = 'file:///C:/%E4%B8%AD%E5%A4%AE/%E5%95%86%E7%94%A8%E8%A8%88%E7%AE%97%E6%A9%9F%E7%A8%8B%E5%BC%8F/%E6%8E%A8%E8%96%A6%E9%81%8B%E5%8B%95.html';
+        });
+
+
+        
+      </script>
+    </body>
+    </html>
